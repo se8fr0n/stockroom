@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stockroom</title>
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="/static/manifest.webmanifest">
+<link rel="icon" href="/static/icon-192.png">
+<link rel="apple-touch-icon" href="/static/icon-192.png">
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--fg:#14161f;--mut:#6b7080;--line:#e6e8f0;--brand:#4f46e5;--brand-d:#4338ca;
+--ok:#16a34a;--okb:#dcfce7;--low:#b45309;--lowb:#fef3c7;--out:#dc2626;--outb:#fee2e2;--shadow:0 1px 3px rgba(20,22,40,.07),0 6px 18px rgba(20,22,40,.05)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1017;--card:#171a24;--fg:#eceef6;--mut:#8b90a3;--line:#262a38;--brand:#818cf8;--brand-d:#6366f1;
+--okb:#12301f;--lowb:#35280d;--outb:#3a1414;--ok:#4ade80;--low:#fbbf24;--out:#f87171;--shadow:0 1px 3px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+button,input,select{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+header h1{margin:0;font-size:18px;flex:1;letter-spacing:.2px}
+.hbtn{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer}
+.hbtn:hover{background:rgba(255,255,255,.28)}
+details.menu{position:relative}
+details.menu summary{list-style:none;cursor:pointer}
+details.menu summary::-webkit-details-marker{display:none}
+.menu .pop{position:absolute;right:0;top:44px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:170px;overflow:hidden}
+.menu .pop a,.menu .pop button{display:block;width:100%;text-align:left;padding:11px 14px;background:none;border:0;color:inherit;text-decoration:none;cursor:pointer}
+.menu .pop a:hover,.menu .pop button:hover{background:var(--bg)}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow);border:2px solid transparent;text-align:left;cursor:default}
+.stat.click{cursor:pointer}.stat.on{border-color:var(--brand)}
+.stat small{color:var(--mut);display:block;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.stat b{font-size:22px;display:block;margin-top:2px}
+.stat.low b{color:var(--low)}.stat.out b{color:var(--out)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tools input,.tools select{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tools input{flex:1;min-width:180px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:6px 14px;cursor:pointer;color:var(--mut)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.card{background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card h3{margin:0;font-size:16px}
+.sku{color:var(--mut);font-size:12.5px;margin-top:2px}
+.badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.in_stock{background:var(--okb);color:var(--ok)}.low{background:var(--lowb);color:var(--low)}.sold_out{background:var(--outb);color:var(--out)}
+.mid{display:flex;justify-content:space-between;align-items:baseline}
+.price{font-weight:700;font-size:17px}
+.qty{color:var(--mut)}.qty b{color:var(--fg);font-size:20px}
+.acts{display:flex;gap:6px}
+.btn{flex:1;border:0;border-radius:10px;padding:9px;font-weight:600;cursor:pointer;background:var(--brand);color:#fff}
+.btn:hover{background:var(--brand-d)}
+.btn.alt{background:var(--bg);color:var(--fg);border:1px solid var(--line)}
+.btn.danger{background:var(--out)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.empty{text-align:center;color:var(--mut);padding:50px 10px}
+dialog{border:0;border-radius:16px;background:var(--card);color:var(--fg);padding:20px;width:min(440px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,12,20,.55)}
+dialog h2{margin:0 0 12px;font-size:18px}
+label{display:block;font-size:12.5px;color:var(--mut);margin:10px 0 4px}
+dialog input,dialog select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.foot{display:flex;gap:8px;margin-top:16px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg);padding:4px;border-radius:12px}
+.seg button{border:0;background:none;padding:8px 2px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--mut)}
+.seg button.on{background:var(--card);color:var(--fg);font-weight:700;box-shadow:var(--shadow)}
+.preview{margin-top:10px;color:var(--mut)}.preview b{color:var(--fg)}
+.hist{max-height:55vh;overflow:auto;margin:0;padding:0;list-style:none}
+.hist li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+.hist small{color:var(--mut);display:block}.pos{color:var(--ok);font-weight:700}.neg{color:var(--out);font-weight:700}
+#login{position:fixed;inset:0;background:var(--brand);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
+#login .box{background:var(--card);padding:26px;border-radius:18px;width:min(360px,100%)}
+#login h2{margin:0 0 4px}#login p{margin:0 0 14px;color:var(--mut)}
+#login input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:12px}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;padding:11px 18px;border-radius:12px;transition:.25s;z-index:30;max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0)}#toast.err{background:var(--out)}
+@media(max-width:600px){
+  dialog{margin:auto 0 0;width:100%;max-width:none;border-radius:18px 18px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  main{padding:12px}
+}
+</style></head><body>
+
+<div id="login"><form class="box" id="loginForm">
+  <h2>Stockroom</h2><p>Enter your password to continue.</p>
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password" required>
+  <button class="btn" style="width:100%;padding:12px">Log in</button>
+</form></div>
+
+<header>
+  <h1>Stockroom</h1>
+  <button class="hbtn" id="addBtn">+ Add item</button>
+  <details class="menu"><summary class="hbtn">⋯</summary>
+    <div class="pop">
+      <button id="importBtn">Import CSV</button>
+      <a href="/api/export.csv">Export CSV</a>
+      <button id="logoutBtn">Log out</button>
+    </div>
+  </details>
+  <input type="file" id="file" accept=".csv,text/csv" hidden>
+</header>
+
+<main>
+  <section class="stats" id="stats"></section>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search name or SKU…">
+    <select id="cat"></select>
+    <select id="sort">
+      <option value="name">Sort: Name</option>
+      <option value="qty">Sort: Lowest stock</option>
+      <option value="price">Sort: Highest price</option>
+    </select>
+  </div>
+  <div class="chips" id="chips"></div>
+  <section class="grid" id="list"></section>
+</main>
+
+<dialog id="itemDlg"><form id="itemForm">
+  <h2 id="itemTitle">Add item</h2>
+  <label>Name</label><input id="f_name" required maxlength="200">
+  <div class="row2">
+    <div><label>SKU / code</label><input id="f_sku" required maxlength="50"></div>
+    <div><label>Category</label><input id="f_cat" list="cats" placeholder="Laptops, Accessories…" maxlength="100"><datalist id="cats"></datalist></div>
+  </div>
+  <div class="row2">
+    <div><label>Price (KES)</label><input id="f_price" type="number" min="0" inputmode="numeric" required></div>
+    <div><label>Low-stock level</label><input id="f_rl" type="number" min="0" inputmode="numeric" value="3"></div>
+  </div>
+  <div id="qtyWrap"><label>Starting quantity</label><input id="f_qty" type="number" min="0" inputmode="numeric" value="0"></div>
+  <div class="foot">
+    <button type="button" class="btn alt" id="delBtn" style="display:none;color:var(--out)">Delete</button>
+    <button type="button" class="btn alt" data-close>Cancel</button>
+    <button class="btn">Save</button>
+  </div>
+</form></dialog>
+
+<dialog id="stockDlg"><form id="stockForm">
+  <h2 id="stockTitle">Update stock</h2>
+  <div class="seg" id="seg">
+    <button type="button" data-m="sale">Sale</button><button type="button" data-m="restock">Restock</button>
+    <button type="button" data-m="damaged">Damaged</button><button type="button" data-m="set">Set count</button>
+  </div>
+  <label id="stockLbl">Quantity</label>
+  <input id="s_qty" type="number" min="0" inputmode="numeric" required>
+  <div class="preview" id="preview"></div>
+  <div class="foot"><button type="button" class="btn alt" data-close>Cancel</button><button class="btn">Confirm</button></div>
+</form></dialog>
+
+<dialog id="histDlg">
+  <h2 id="histTitle">History</h2><ul class="hist" id="hist"></ul>
+  <div class="foot"><button class="btn alt" data-close>Close</button></div>
+</dialog>
+
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const fmt=n=>Number(n).toLocaleString("en-KE");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const LABEL={in_stock:"In stock",low:"Low stock",sold_out:"Sold out"};
+const S={items:[],status:"",cat:"",q:"",sort:"name",editId:null,stockId:null,mode:"sale"};
+
+function toast(m,err){const t=$("#toast");t.textContent=m;t.className="show"+(err?" err":"");clearTimeout(t._t);t._t=setTimeout(()=>t.className="",2800)}
+
+async function api(url,opt={}){
+  const headers=Object.assign({"Content-Type":"application/json"},opt.headers||{});
+  const r=await fetch(url,Object.assign({credentials:"same-origin"},opt,{headers}));
+  if(r.status===401&&!url.startsWith("/auth/")){showLogin();throw new Error("auth")}
+  if(!r.ok){let m="Something went wrong";try{const j=await r.json();m=typeof j.detail==="string"?j.detail:(j.detail&&j.detail[0]&&j.detail[0].msg)||m}catch(e){}toast(m,true);throw new Error(m)}
+  return r.status===204?null:r.json();
+}
+
+/* ---------- auth ---------- */
+function showLogin(){$("#login").style.display="flex";$("#pw").focus()}
+$("#loginForm").onsubmit=async e=>{e.preventDefault();
+  try{await api("/auth/login",{method:"POST",body:JSON.stringify({password:$("#pw").value})});$("#pw").value="";$("#login").style.display="none";load()}catch(_){}};
+$("#logoutBtn").onclick=async()=>{await api("/auth/logout",{method:"POST"});location.reload()};
+
+/* ---------- data ---------- */
+async function load(){S.items=await api("/api/items");render()}
+
+function render(){
+  const all=S.items;
+  const cnt=k=>all.filter(i=>i.status===k).length;
+  const units=all.reduce((a,i)=>a+i.quantity,0), value=all.reduce((a,i)=>a+i.quantity*i.price_kes,0);
+  $("#stats").innerHTML=`
+    <div class="stat"><small>Products</small><b>${fmt(all.length)}</b></div>
+    <div class="stat"><small>Units in stock</small><b>${fmt(units)}</b></div>
+    <div class="stat"><small>Stock value</small><b>KES ${fmt(value)}</b></div>
+    <button class="stat click low ${S.status==="low"?"on":""}" data-st="low"><small>Low stock</small><b>${cnt("low")}</b></button>
+    <button class="stat click out ${S.status==="sold_out"?"on":""}" data-st="sold_out"><small>Sold out</small><b>${cnt("sold_out")}</b></button>`;
+  $("#chips").innerHTML=[["","All"],["in_stock","In stock"],["low","Low"],["sold_out","Sold out"]]
+    .map(([k,l])=>`<button class="chip ${S.status===k?"on":""}" data-st="${k}">${l}</button>`).join("");
+  const cats=[...new Set(all.map(i=>i.category))].sort();
+  if(S.cat&&!cats.includes(S.cat))S.cat="";
+  $("#cat").innerHTML=`<option value="">All categories</option>`+cats.map(c=>`<option ${c===S.cat?"selected":""}>${esc(c)}</option>`).join("");
+  $("#cats").innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join("");
+  let list=all.filter(i=>(!S.status||i.status===S.status)&&(!S.cat||i.category===S.cat)&&(!S.q||(i.name+" "+i.sku).toLowerCase().includes(S.q)));
+  list.sort(S.sort==="qty"?(a,b)=>a.quantity-b.quantity:S.sort==="price"?(a,b)=>b.price_kes-a.price_kes:(a,b)=>a.name.localeCompare(b.name));
+  $("#list").innerHTML=list.map(i=>`
+    <article class="card">
+      <div class="top"><div><h3>${esc(i.name)}</h3><div class="sku">${esc(i.sku)} · ${esc(i.category)}</div></div>
+        <span class="badge ${i.status}">${LABEL[i.status]}</span></div>
+      <div class="mid"><div class="price">KES ${fmt(i.price_kes)}</div><div class="qty"><b>${fmt(i.quantity)}</b> left</div></div>
+      <div class="acts">
+        <button class="btn" data-act="sale" data-id="${i.id}" ${i.quantity?"":"disabled"}>Sell</button>
+        <button class="btn alt" data-act="restock" data-id="${i.id}">Restock</button>
+        <button class="btn alt" data-act="hist" data-id="${i.id}">History</button>
+        <button class="btn alt" data-act="edit" data-id="${i.id}">Edit</button>
+      </div></article>`).join("")
+    ||`<div class="empty" style="grid-column:1/-1">${all.length?"No items match your filters.":"No items yet. Tap “+ Add item” to start."}</div>`;
+}
+
+/* ---------- filters ---------- */
+document.addEventListener("click",e=>{
+  const st=e.target.closest("[data-st]");
+  if(st){S.status=S.status===st.dataset.st?"":st.dataset.st;render()}
+  if(e.target.closest("[data-close]"))e.target.closest("dialog").close();
+  if(!e.target.closest("details.menu"))document.querySelector("details.menu").open=false;
+});
+$("#q").oninput=e=>{S.q=e.target.value.trim().toLowerCase();render()};
+$("#cat").onchange=e=>{S.cat=e.target.value;render()};
+$("#sort").onchange=e=>{S.sort=e.target.value;render()};
+
+/* ---------- card actions ---------- */
+$("#list").onclick=async e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const id=+b.dataset.id, a=b.dataset.act;
+  if(a==="sale"||a==="restock")openStock(id,a);
+  else if(a==="edit")openItem(id);
+  else if(a==="hist")openHist(id);
+};
+
+/* ---------- add / edit ---------- */
+function openItem(id){
+  S.editId=id||null;const i=id?S.items.find(x=>x.id===id):null;
+  $("#itemTitle").textContent=i?"Edit item":"Add item";
+  $("#f_name").value=i?i.name:"";$("#f_sku").value=i?i.sku:"";$("#f_cat").value=i?i.category:"";
+  $("#f_price").value=i?i.price_kes:"";$("#f_rl").value=i?i.reorder_level:3;$("#f_qty").value=0;
+  $("#qtyWrap").style.display=i?"none":"block";$("#delBtn").style.display=i?"block":"none";
+  $("#itemDlg").showModal();
+}
+$("#addBtn").onclick=()=>openItem();
+$("#itemForm").onsubmit=async e=>{e.preventDefault();
+  const body={name:$("#f_name").value,sku:$("#f_sku").value,category:$("#f_cat").value.trim()||"General",
+    price_kes:+$("#f_price").value,reorder_level:+($("#f_rl").value||3)};
+  try{
+    if(S.editId){await api("/api/items/"+S.editId,{method:"PUT",body:JSON.stringify(body)});toast("Item updated")}
+    else{body.quantity=+($("#f_qty").value||0);await api("/api/items",{method:"POST",body:JSON.stringify(body)});toast("Item added")}
+    $("#itemDlg").close();load();
+  }catch(_){}};
+$("#delBtn").onclick=async()=>{
+  const i=S.items.find(x=>x.id===S.editId);
+  if(!confirm(`Delete “${i.name}” and its history? This cannot be undone.`))return;
+  try{await api("/api/items/"+S.editId,{method:"DELETE"});$("#itemDlg").close();toast("Item deleted");load()}catch(_){}};
+
+/* ---------- stock ---------- */
+function openStock(id,mode){
+  S.stockId=id;const i=S.items.find(x=>x.id===id);
+  $("#stockTitle").textContent=i.name;$("#s_qty").value=mode==="set"?i.quantity:1;
+  setMode(mode);$("#stockDlg").showModal();$("#s_qty").select();
+}
+function setMode(m){
+  S.mode=m;document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+  $("#stockLbl").textContent=m==="set"?"Counted quantity":"Quantity";preview();
+}
+function delta(){
+  const i=S.items.find(x=>x.id===S.stockId), q=+$("#s_qty").value||0;
+  return S.mode==="restock"?q:S.mode==="set"?q-i.quantity:-q;
+}
+function preview(){
+  const i=S.items.find(x=>x.id===S.stockId);if(!i)return;
+  $("#preview").innerHTML=`Now <b>${i.quantity}</b> → after: <b>${i.quantity+delta()}</b>`;
+}
+$("#seg").onclick=e=>{const b=e.target.closest("button");if(!b)return;
+  const i=S.items.find(x=>x.id===S.stockId);if(b.dataset.m==="set")$("#s_qty").value=i.quantity;setMode(b.dataset.m)};
+$("#s_qty").oninput=preview;
+$("#stockForm").onsubmit=async e=>{e.preventDefault();
+  const change=delta();if(change===0){toast("Nothing to change",true);return}
+  const reason={sale:"sale",restock:"restock",damaged:"damaged",set:"correction"}[S.mode];
+  try{await api(`/api/items/${S.stockId}/move`,{method:"POST",body:JSON.stringify({change,reason})});
+    $("#stockDlg").close();toast("Stock updated");load()}catch(_){}};
+
+/* ---------- history ---------- */
+const when=s=>new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s)?s:s+"Z").toLocaleString("en-KE",{dateStyle:"medium",timeStyle:"short"});
+async function openHist(id){
+  const i=S.items.find(x=>x.id===id);$("#histTitle").textContent=i.name;
+  try{const m=await api(`/api/items/${id}/movements`);
+    $("#hist").innerHTML=m.map(x=>`<li><div>${esc(x.reason)}<small>${when(x.created_at)}</small></div><span class="${x.change>0?"pos":"neg"}">${x.change>0?"+":""}${x.change}</span></li>`).join("")||`<li>No movements yet</li>`;
+    $("#histDlg").showModal()}catch(_){}
+}
+
+/* ---------- import ---------- */
+$("#importBtn").onclick=()=>$("#file").click();
+$("#file").onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{const r=await api("/api/import",{method:"POST",headers:{"Content-Type":"text/csv"},body:await f.text()});
+    toast(`Imported: ${r.created} new, ${r.updated} updated${r.errors.length?`, ${r.errors.length} skipped`:""}`);
+    if(r.errors.length)alert("Some rows were skipped:\n\n"+r.errors.join("\n"));
+    load()}catch(_){}
+  e.target.value="";
+};
+
+/* ---------- start ---------- */
+if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+(async()=>{
+  try{const m=await api("/auth/me");
+    if(m.auth_required&&!m.logged_in)showLogin();else load()}catch(_){}
+})();
+</script></body></html>

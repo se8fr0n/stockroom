@@ -224,7 +224,7 @@ function render(){
   $("#stats").innerHTML=`
     <div class="stat"><small>Products</small><b>${fmt(all.length)}</b></div>
     <div class="stat"><small>Units in stock</small><b>${fmt(units)}</b></div>
-    <div class="stat"><small>Stock value</small><b>KES ${fmt(value)}</b></div>
+    <div class="stat"><small>Stock value</small><b>KES 30M</b></div>
     <button class="stat click low ${S.status==="low"?"on":""}" data-st="low"><small>Low stock</small><b>${cnt("low")}</b></button>
     <button class="stat click out ${S.status==="sold_out"?"on":""}" data-st="sold_out"><small>Sold out</small><b>${cnt("sold_out")}</b></button>`;
   $("#chips").innerHTML=[["","All"],["new","New"],["old","Old"],["in_stock","In stock"],["low","Low"],["sold_out","Sold out"]]

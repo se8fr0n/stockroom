@@ -32,3 +32,18 @@ def test_stock_flow_edit_and_import():
     assert c.get("/api/export.csv").status_code == 200
     # delete
     assert c.delete(f"/api/items/{i}").status_code == 204
+
+
+def test_receive_records_and_new_old():
+    r = c.post("/api/receive", json={"new_item": {"sku": "RC-1", "name": "Dell Latitude 5420", "category": "Laptops",
+               "price_kes": 45000, "reorder_level": 1}, "quantity": 3, "record_date": "2020-01-05",
+               "initials": "mw", "note": "first batch"})
+    assert r.status_code == 201 and r.json()["quantity"] == 3
+    item = next(i for i in c.get("/api/items").json() if i["sku"] == "RC-1")
+    assert item["is_new"] is False and item["age_days"] > 14          # old stock
+    c.post("/api/receive", json={"item_id": item["id"], "quantity": 2})  # today -> NEW
+    item = next(i for i in c.get("/api/items").json() if i["sku"] == "RC-1")
+    assert item["is_new"] is True and item["quantity"] == 5
+    recs = c.get("/api/records?start=2020-01-01&end=2020-01-31").json()
+    assert len(recs) == 1 and recs[0]["initials"] == "MW" and recs[0]["backdated"] is True
+    assert c.get("/api/export-records.csv").status_code == 200 and "v" in c.get("/api/pulse").json()

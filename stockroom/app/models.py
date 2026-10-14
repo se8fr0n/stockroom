@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from sqlalchemy import String, Integer, ForeignKey, DateTime
+from datetime import date, datetime, timezone
+from sqlalchemy import String, Integer, ForeignKey, DateTime, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
 
@@ -36,5 +36,8 @@ class StockMovement(Base):
     item_id: Mapped[int] = mapped_column(ForeignKey("items.id"), index=True)
     change: Mapped[int] = mapped_column(Integer)  # +restock, -sale
     reason: Mapped[str] = mapped_column(String(50))  # sale, restock, damaged, correction, initial
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)  # day it was typed in
+    record_date: Mapped[date] = mapped_column(Date, default=date.today, index=True)  # day it really happened (can be backdated)
+    initials: Mapped[str] = mapped_column(String(10), default="")
+    note: Mapped[str] = mapped_column(String(300), default="")
     item: Mapped[Item] = relationship(back_populates="movements")

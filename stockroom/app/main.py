@@ -1,16 +1,16 @@
 import asyncio, csv, hashlib, hmac, io, os
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from .database import IS_SQLITE, Base, engine, get_db
+from .database import IS_SQLITE, Base, engine, get_db, migrate
 from .models import Item, StockMovement
 
 # ---------- config ----------
@@ -22,6 +22,8 @@ SECRET_KEY = os.getenv("SECRET_KEY") or hashlib.sha256(("stockroom:" + APP_PASSW
 ON_CLOUD = bool(os.getenv("RENDER"))  # Render sets this; enables secure cookies
 
 Base.metadata.create_all(engine)
+migrate()
+NEW_DAYS = int(os.getenv("NEW_DAYS", "14"))  # stock received within this many days is tagged NEW
 STATIC = Path(__file__).parent / "static"
 
 app = FastAPI(title="Stockroom")
@@ -76,18 +78,27 @@ class ItemCreate(ItemUpdate):
 class ItemOut(ItemCreate):
     id: int
     status: str
+    last_received: date | None = None
+    age_days: int | None = None
+    is_new: bool = False
     model_config = {"from_attributes": True}
 
 
 class MoveIn(BaseModel):
     change: int = Field(description="positive = restock, negative = sale/loss")
     reason: str = Field(default="sale", max_length=50)
+    record_date: date | None = None
+    initials: str = Field(default="", max_length=10)
+    note: str = Field(default="", max_length=300)
 
 
 class MoveOut(BaseModel):
     change: int
     reason: str
     created_at: datetime
+    record_date: date | None = None
+    initials: str = ""
+    note: str = ""
     model_config = {"from_attributes": True}
 
 
@@ -125,7 +136,17 @@ def sku_taken(db: Session, sku: str, except_id: int | None = None) -> bool:
 
 @api.get("/items", response_model=list[ItemOut])
 def list_items(db: Session = Depends(get_db)):
-    return db.scalars(select(Item).order_by(Item.name)).all()
+    last = dict(db.execute(select(StockMovement.item_id, func.max(StockMovement.record_date))
+                           .where(StockMovement.change > 0).group_by(StockMovement.item_id)).all())
+    out = []
+    for i in db.scalars(select(Item).order_by(Item.name)).all():
+        o = ItemOut.model_validate(i)
+        d = last.get(i.id)
+        if d:
+            o.last_received, o.age_days = d, max((date.today() - d).days, 0)
+            o.is_new = o.age_days <= NEW_DAYS
+        out.append(o)
+    return out
 
 
 @api.post("/items", response_model=ItemOut, status_code=201)
@@ -170,7 +191,9 @@ def move_stock(item_id: int, data: MoveIn, db: Session = Depends(get_db)):
     if item.quantity + data.change < 0:
         raise HTTPException(409, f"Only {item.quantity} left in stock")
     item.quantity += data.change
-    db.add(StockMovement(item_id=item.id, change=data.change, reason=data.reason))
+    db.add(StockMovement(item_id=item.id, change=data.change, reason=data.reason,
+                         record_date=data.record_date or date.today(),
+                         initials=data.initials.strip().upper(), note=data.note.strip()))
     db.commit()
     db.refresh(item)
     return item
@@ -239,6 +262,92 @@ async def import_csv(request: Request, db: Session = Depends(get_db)):
             created += 1
     db.commit()
     return {"created": created, "updated": updated, "errors": errors[:10]}
+
+
+class ReceiveIn(BaseModel):
+    item_id: int | None = None
+    new_item: ItemUpdate | None = None
+    quantity: int = Field(gt=0)
+    record_date: date | None = None
+    initials: str = Field(default="", max_length=10)
+    note: str = Field(default="", max_length=300)
+    opening: bool = False  # true = stock that was already on the shelf
+
+
+@api.post("/receive", response_model=ItemOut, status_code=201)
+def receive(data: ReceiveIn, db: Session = Depends(get_db)):
+    """Incoming stock: adds to an existing item, or creates a new one, on the chosen date of record."""
+    if data.item_id:
+        item = get_item(db, data.item_id)
+    elif data.new_item:
+        n = data.new_item
+        n.sku, n.name = n.sku.strip(), n.name.strip()
+        if sku_taken(db, n.sku):
+            raise HTTPException(409, f"SKU '{n.sku}' already exists")
+        item = Item(**n.model_dump(), quantity=0)
+        db.add(item)
+        db.flush()
+    else:
+        raise HTTPException(422, "Choose an item or enter a new one")
+    item.quantity += data.quantity
+    db.add(StockMovement(item_id=item.id, change=data.quantity, reason="opening" if data.opening else "restock",
+                         record_date=data.record_date or date.today(),
+                         initials=data.initials.strip().upper(), note=data.note.strip()))
+    db.commit()
+    db.refresh(item)
+    return ItemOut.model_validate(item)
+
+
+class RecordOut(BaseModel):
+    id: int
+    ref: str
+    kind: str  # incoming | sale | adjust
+    item: str
+    change: int
+    record_date: date
+    initials: str
+    note: str
+    entered_on: date
+    backdated: bool
+
+
+@api.get("/records", response_model=list[RecordOut])
+def records(start: date | None = None, end: date | None = None, db: Session = Depends(get_db)):
+    q = (select(StockMovement, Item.name).join(Item, Item.id == StockMovement.item_id)
+         .order_by(StockMovement.record_date.desc(), StockMovement.id.desc()).limit(2000))
+    if start:
+        q = q.where(StockMovement.record_date >= start)
+    if end:
+        q = q.where(StockMovement.record_date <= end)
+    out = []
+    for m, name in db.execute(q):
+        kind = "sale" if m.reason == "sale" else "incoming" if m.reason in ("restock", "opening", "initial") else "adjust"
+        entered = m.created_at.date()
+        rd = m.record_date or entered
+        out.append(RecordOut(id=m.id, ref=("INC-" if kind == "incoming" else "MOV-") + f"{m.id:04d}", kind=kind,
+                             item=name, change=m.change, record_date=rd, initials=m.initials or "",
+                             note=m.note or "", entered_on=entered, backdated=rd < entered))
+    return out
+
+
+@api.get("/export-records.csv")
+def export_records(start: date | None = None, end: date | None = None, db: Session = Depends(get_db)):
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["ref", "date_of_record", "type", "item", "change", "initials", "note", "entered_on", "backdated"])
+    for r in records(start, end, db):
+        w.writerow([r.ref, r.record_date, r.kind, r.item, r.change, r.initials, r.note, r.entered_on, r.backdated])
+    return StreamingResponse(iter([buf.getvalue()]), media_type="text/csv",
+                             headers={"Content-Disposition": "attachment; filename=records.csv"})
+
+
+@api.get("/pulse")
+def pulse(db: Session = Depends(get_db)):
+    """Cheap change marker. Screens poll it every few seconds and reload when it changes."""
+    m = db.scalar(select(func.max(StockMovement.id))) or 0
+    t = db.scalar(select(func.max(Item.updated_at)))
+    n = db.scalar(select(func.count(Item.id)))
+    return {"v": f"{m}-{t}-{n}"}
 
 
 app.include_router(api)

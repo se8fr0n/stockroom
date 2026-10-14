@@ -2,20 +2,20 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Stockroom</title>
-<meta name="theme-color" content="#4f46e5">
+<title>Maya Computers · Stockroom</title>
+<meta name="theme-color" content="#0d0d0d">
 <link rel="manifest" href="/static/manifest.webmanifest">
 <link rel="icon" href="/static/icon-192.png">
 <link rel="apple-touch-icon" href="/static/icon-192.png">
 <style>
-:root{--bg:#f5f6fa;--card:#fff;--fg:#14161f;--mut:#6b7080;--line:#e6e8f0;--brand:#4f46e5;--brand-d:#4338ca;
+:root{--bg:#f5f6fa;--card:#fff;--fg:#14161f;--mut:#6b7080;--line:#e6e8f0;--brand:#ff6a00;--brand-d:#d95a00;
 --ok:#16a34a;--okb:#dcfce7;--low:#b45309;--lowb:#fef3c7;--out:#dc2626;--outb:#fee2e2;--shadow:0 1px 3px rgba(20,22,40,.07),0 6px 18px rgba(20,22,40,.05)}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1017;--card:#171a24;--fg:#eceef6;--mut:#8b90a3;--line:#262a38;--brand:#818cf8;--brand-d:#6366f1;
+@media(prefers-color-scheme:dark){:root{--bg:#0e1017;--card:#171a24;--fg:#eceef6;--mut:#8b90a3;--line:#262a38;--brand:#ff7a1a;--brand-d:#ff6a00;
 --okb:#12301f;--lowb:#35280d;--outb:#3a1414;--ok:#4ade80;--low:#fbbf24;--out:#f87171;--shadow:0 1px 3px rgba(0,0,0,.4)}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
 button,input,select{font:inherit;color:inherit}
-header{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+header{position:sticky;top:0;z-index:5;background:#0d0d0d;border-bottom:4px solid var(--brand);color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
 header h1{margin:0;font-size:18px;flex:1;letter-spacing:.2px}
 .hbtn{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer}
 .hbtn:hover{background:rgba(255,255,255,.28)}
@@ -37,7 +37,7 @@ main{max-width:1100px;margin:0 auto;padding:16px}
 .tools input{flex:1;min-width:180px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:6px 14px;cursor:pointer;color:var(--mut)}
-.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#111}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
 .card{background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
 .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
@@ -49,7 +49,7 @@ main{max-width:1100px;margin:0 auto;padding:16px}
 .price{font-weight:700;font-size:17px}
 .qty{color:var(--mut)}.qty b{color:var(--fg);font-size:20px}
 .acts{display:flex;gap:6px}
-.btn{flex:1;border:0;border-radius:10px;padding:9px;font-weight:600;cursor:pointer;background:var(--brand);color:#fff}
+.btn{flex:1;border:0;border-radius:10px;padding:9px;font-weight:600;cursor:pointer;background:var(--brand);color:#111}
 .btn:hover{background:var(--brand-d)}
 .btn.alt{background:var(--bg);color:var(--fg);border:1px solid var(--line)}
 .btn.danger{background:var(--out)}
@@ -69,12 +69,18 @@ dialog input,dialog select{width:100%;padding:10px 12px;border:1px solid var(--l
 .hist{max-height:55vh;overflow:auto;margin:0;padding:0;list-style:none}
 .hist li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
 .hist small{color:var(--mut);display:block}.pos{color:var(--ok);font-weight:700}.neg{color:var(--out);font-weight:700}
-#login{position:fixed;inset:0;background:var(--brand);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
+#login{position:fixed;inset:0;background:#0d0d0d;display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
 #login .box{background:var(--card);padding:26px;border-radius:18px;width:min(360px,100%)}
 #login h2{margin:0 0 4px}#login p{margin:0 0 14px;color:var(--mut)}
 #login input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:12px}
 #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;padding:11px 18px;border-radius:12px;transition:.25s;z-index:30;max-width:90vw}
 #toast.show{transform:translateX(-50%) translateY(0)}#toast.err{background:var(--out)}
+.tabs{display:flex;background:#0d0d0d;padding:0 12px}.tabs button{flex:1;max-width:200px;background:none;border:0;color:#bbb;padding:11px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent}.tabs button.on{color:#fff;border-bottom-color:var(--brand)}
+.badge.new{background:var(--brand);color:#111}.badge.old{background:transparent;color:var(--mut);border:1.5px solid var(--mut)}
+.rec{display:flex;justify-content:space-between;gap:8px;background:var(--card);border-radius:12px;padding:10px 12px;margin:6px 0;box-shadow:var(--shadow)}.rec small{display:block;color:var(--mut)}
+.dh{display:flex;justify-content:space-between;font-weight:800;margin-top:14px}.dh small{color:var(--mut);font-weight:600}
+.gapbox{background:#111;color:#fff;border-left:5px solid var(--brand);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+main[hidden]{display:none}
 @media(max-width:600px){
   dialog{margin:auto 0 0;width:100%;max-width:none;border-radius:18px 18px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
   main{padding:12px}
@@ -88,19 +94,22 @@ dialog input,dialog select{width:100%;padding:10px 12px;border:1px solid var(--l
 </form></div>
 
 <header>
-  <h1>Stockroom</h1>
-  <button class="hbtn" id="addBtn">+ Add item</button>
+  <h1>Maya Computers</h1>
+  <button class="hbtn" id="recvBtn" style="background:var(--brand);color:#111">Receive stock</button>
+  <button class="hbtn" id="addBtn">+ Item</button>
   <details class="menu"><summary class="hbtn">⋯</summary>
     <div class="pop">
       <button id="importBtn">Import CSV</button>
-      <a href="/api/export.csv">Export CSV</a>
+      <a href="/api/export.csv">Export items</a>
+      <a href="/api/export-records.csv">Export records</a>
       <button id="logoutBtn">Log out</button>
     </div>
   </details>
   <input type="file" id="file" accept=".csv,text/csv" hidden>
 </header>
+<nav class="tabs"><button class="on" data-tab="stock">Stock</button><button data-tab="rec">Records</button></nav>
 
-<main>
+<main id="stockView">
   <section class="stats" id="stats"></section>
   <div class="tools">
     <input id="q" type="search" placeholder="Search name or SKU…">
@@ -114,6 +123,32 @@ dialog input,dialog select{width:100%;padding:10px 12px;border:1px solid var(--l
   <div class="chips" id="chips"></div>
   <section class="grid" id="list"></section>
 </main>
+
+<main id="recView" hidden>
+  <div class="tools">
+    <input type="date" id="g_start" style="flex:none"><input type="date" id="g_end" style="flex:none">
+    <a id="expRec" href="#"><button class="btn alt" style="padding:10px 14px">Export</button></a>
+  </div>
+  <section class="stats" id="recStats"></section>
+  <div id="gapBox"></div>
+  <div id="recList"></div>
+</main>
+
+<dialog id="recvDlg"><form id="recvForm">
+  <h2>Receive stock</h2>
+  <div class="row2"><div><label>Date of record</label><input id="r_date" type="date" required></div>
+  <div><label>Received by (initials)</label><input id="r_ini" maxlength="10"></div></div>
+  <label>Item</label><select id="r_item"></select>
+  <div id="newFields" style="display:none">
+    <label>New item name / description</label><input id="n_name" maxlength="200">
+    <div class="row2"><div><label>SKU / code</label><input id="n_sku" maxlength="50"></div><div><label>Category</label><input id="n_cat" list="cats"></div></div>
+    <div class="row2"><div><label>Price (KES)</label><input id="n_price" type="number" min="0" inputmode="numeric"></div><div><label>Low-stock level</label><input id="n_rl" type="number" min="0" value="3"></div></div>
+  </div>
+  <div class="row2"><div><label>Quantity</label><input id="r_qty" type="number" min="1" required inputmode="numeric"></div>
+  <div><label>Note (optional)</label><input id="r_note" maxlength="300"></div></div>
+  <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="r_open" style="width:auto"> Opening stock (already on the shelf)</label>
+  <div class="foot"><button type="button" class="btn alt" data-close>Cancel</button><button class="btn">Save</button></div>
+</form></dialog>
 
 <dialog id="itemDlg"><form id="itemForm">
   <h2 id="itemTitle">Add item</h2>
@@ -142,6 +177,7 @@ dialog input,dialog select{width:100%;padding:10px 12px;border:1px solid var(--l
   </div>
   <label id="stockLbl">Quantity</label>
   <input id="s_qty" type="number" min="0" inputmode="numeric" required>
+  <div class="row2"><div><label>Date of record</label><input id="s_date" type="date" required></div><div><label>Initials</label><input id="s_ini" maxlength="10"></div></div>
   <div class="preview" id="preview"></div>
   <div class="foot"><button type="button" class="btn alt" data-close>Cancel</button><button class="btn">Confirm</button></div>
 </form></dialog>
@@ -158,7 +194,8 @@ const $=s=>document.querySelector(s);
 const fmt=n=>Number(n).toLocaleString("en-KE");
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const LABEL={in_stock:"In stock",low:"Low stock",sold_out:"Sold out"};
-const S={items:[],status:"",cat:"",q:"",sort:"name",editId:null,stockId:null,mode:"sale"};
+const S={items:[],status:"",cat:"",q:"",sort:"name",editId:null,stockId:null,mode:"sale",tab:"stock"};
+let pv=null,pt=null;
 
 function toast(m,err){const t=$("#toast");t.textContent=m;t.className="show"+(err?" err":"");clearTimeout(t._t);t._t=setTimeout(()=>t.className="",2800)}
 
@@ -173,11 +210,12 @@ async function api(url,opt={}){
 /* ---------- auth ---------- */
 function showLogin(){$("#login").style.display="flex";$("#pw").focus()}
 $("#loginForm").onsubmit=async e=>{e.preventDefault();
-  try{await api("/auth/login",{method:"POST",body:JSON.stringify({password:$("#pw").value})});$("#pw").value="";$("#login").style.display="none";load()}catch(_){}};
+  try{await api("/auth/login",{method:"POST",body:JSON.stringify({password:$("#pw").value})});$("#pw").value="";$("#login").style.display="none";load();startPulse()}catch(_){}};
 $("#logoutBtn").onclick=async()=>{await api("/auth/logout",{method:"POST"});location.reload()};
 
 /* ---------- data ---------- */
-async function load(){S.items=await api("/api/items");render()}
+async function load(){S.items=await api("/api/items");render();try{pv=(await api("/api/pulse")).v}catch(e){}}
+function match(i){const s=S.status;return !s||(s==="new"?i.is_new:s==="old"?(!i.is_new&&i.age_days!=null):i.status===s)}
 
 function render(){
   const all=S.items;
@@ -189,17 +227,17 @@ function render(){
     <div class="stat"><small>Stock value</small><b>KES ${fmt(value)}</b></div>
     <button class="stat click low ${S.status==="low"?"on":""}" data-st="low"><small>Low stock</small><b>${cnt("low")}</b></button>
     <button class="stat click out ${S.status==="sold_out"?"on":""}" data-st="sold_out"><small>Sold out</small><b>${cnt("sold_out")}</b></button>`;
-  $("#chips").innerHTML=[["","All"],["in_stock","In stock"],["low","Low"],["sold_out","Sold out"]]
+  $("#chips").innerHTML=[["","All"],["new","New"],["old","Old"],["in_stock","In stock"],["low","Low"],["sold_out","Sold out"]]
     .map(([k,l])=>`<button class="chip ${S.status===k?"on":""}" data-st="${k}">${l}</button>`).join("");
   const cats=[...new Set(all.map(i=>i.category))].sort();
   if(S.cat&&!cats.includes(S.cat))S.cat="";
   $("#cat").innerHTML=`<option value="">All categories</option>`+cats.map(c=>`<option ${c===S.cat?"selected":""}>${esc(c)}</option>`).join("");
   $("#cats").innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join("");
-  let list=all.filter(i=>(!S.status||i.status===S.status)&&(!S.cat||i.category===S.cat)&&(!S.q||(i.name+" "+i.sku).toLowerCase().includes(S.q)));
+  let list=all.filter(i=>match(i)&&(!S.cat||i.category===S.cat)&&(!S.q||(i.name+" "+i.sku).toLowerCase().includes(S.q)));
   list.sort(S.sort==="qty"?(a,b)=>a.quantity-b.quantity:S.sort==="price"?(a,b)=>b.price_kes-a.price_kes:(a,b)=>a.name.localeCompare(b.name));
   $("#list").innerHTML=list.map(i=>`
     <article class="card">
-      <div class="top"><div><h3>${esc(i.name)}</h3><div class="sku">${esc(i.sku)} · ${esc(i.category)}</div></div>
+      <div class="top"><div><h3>${esc(i.name)}</h3><div class="sku">${esc(i.sku)} · ${esc(i.category)}${i.age_days==null?"":` · <span class="badge ${i.is_new?"new":"old"}">${i.is_new?"NEW":"OLD"} · ${i.age_days}d</span>`}</div></div>
         <span class="badge ${i.status}">${LABEL[i.status]}</span></div>
       <div class="mid"><div class="price">KES ${fmt(i.price_kes)}</div><div class="qty"><b>${fmt(i.quantity)}</b> left</div></div>
       <div class="acts">
@@ -257,7 +295,7 @@ $("#delBtn").onclick=async()=>{
 /* ---------- stock ---------- */
 function openStock(id,mode){
   S.stockId=id;const i=S.items.find(x=>x.id===id);
-  $("#stockTitle").textContent=i.name;$("#s_qty").value=mode==="set"?i.quantity:1;
+  $("#stockTitle").textContent=i.name;$("#s_date").value=today();$("#s_ini").value=ini();$("#s_qty").value=mode==="set"?i.quantity:1;
   setMode(mode);$("#stockDlg").showModal();$("#s_qty").select();
 }
 function setMode(m){
@@ -277,8 +315,8 @@ $("#seg").onclick=e=>{const b=e.target.closest("button");if(!b)return;
 $("#s_qty").oninput=preview;
 $("#stockForm").onsubmit=async e=>{e.preventDefault();
   const change=delta();if(change===0){toast("Nothing to change",true);return}
-  const reason={sale:"sale",restock:"restock",damaged:"damaged",set:"correction"}[S.mode];
-  try{await api(`/api/items/${S.stockId}/move`,{method:"POST",body:JSON.stringify({change,reason})});
+  const reason={sale:"sale",restock:"restock",damaged:"damaged",set:"correction"}[S.mode];saveIni($("#s_ini").value);
+  try{await api(`/api/items/${S.stockId}/move`,{method:"POST",body:JSON.stringify({change,reason,record_date:$("#s_date").value,initials:$("#s_ini").value})});
     $("#stockDlg").close();toast("Stock updated");load()}catch(_){}};
 
 /* ---------- history ---------- */
@@ -286,7 +324,7 @@ const when=s=>new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s)?s:s+"Z").toLocaleString("e
 async function openHist(id){
   const i=S.items.find(x=>x.id===id);$("#histTitle").textContent=i.name;
   try{const m=await api(`/api/items/${id}/movements`);
-    $("#hist").innerHTML=m.map(x=>`<li><div>${esc(x.reason)}<small>${when(x.created_at)}</small></div><span class="${x.change>0?"pos":"neg"}">${x.change>0?"+":""}${x.change}</span></li>`).join("")||`<li>No movements yet</li>`;
+    $("#hist").innerHTML=m.map(x=>`<li><div>${esc(x.reason)}<small>${x.record_date||""}${x.initials?" · "+esc(x.initials):""}</small></div><span class="${x.change>0?"pos":"neg"}">${x.change>0?"+":""}${x.change}</span></li>`).join("")||`<li>No movements yet</li>`;
     $("#histDlg").showModal()}catch(_){}
 }
 
@@ -301,10 +339,48 @@ $("#file").onchange=async e=>{
   e.target.value="";
 };
 
+/* ---------- dates, tabs, receive, records, live ---------- */
+const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+const ini=()=>{try{return localStorage.getItem("ini")||""}catch(e){return ""}};
+const saveIni=v=>{try{localStorage.setItem("ini",v.trim().toUpperCase())}catch(e){}};
+const fmtD=s=>new Date(s+"T00:00:00Z").toLocaleDateString("en-KE",{day:"numeric",month:"short",timeZone:"UTC"});
+document.querySelector(".tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(!b)return;
+  S.tab=b.dataset.tab;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  $("#stockView").hidden=S.tab!=="stock";$("#recView").hidden=S.tab!=="rec";if(S.tab==="rec")loadRecords()};
+function toggleNew(){$("#newFields").style.display=$("#r_item").value?"none":"block"}
+$("#recvBtn").onclick=()=>{$("#recvForm").reset();
+  $("#r_item").innerHTML=`<option value="">➕ New item…</option>`+S.items.map(i=>`<option value="${i.id}">${esc(i.name)} (${esc(i.sku)})</option>`).join("");
+  $("#r_date").value=today();$("#r_ini").value=ini();if(S.items.length)$("#r_item").value=S.items[0].id;toggleNew();$("#recvDlg").showModal()};
+$("#r_item").onchange=toggleNew;
+$("#recvForm").onsubmit=async e=>{e.preventDefault();saveIni($("#r_ini").value);
+  const body={quantity:+$("#r_qty").value,record_date:$("#r_date").value,initials:$("#r_ini").value,note:$("#r_note").value,opening:$("#r_open").checked};
+  if($("#r_item").value)body.item_id=+$("#r_item").value;
+  else body.new_item={name:$("#n_name").value,sku:$("#n_sku").value,category:$("#n_cat").value.trim()||"General",price_kes:+$("#n_price").value,reorder_level:+($("#n_rl").value||3)};
+  try{await api("/api/receive",{method:"POST",body:JSON.stringify(body)});$("#recvDlg").close();toast("Stock received");load();if(S.tab==="rec")loadRecords()}catch(_){}};
+async function loadRecords(){
+  if(!$("#g_start").value){const d=new Date();d.setDate(d.getDate()-30);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());$("#g_start").value=d.toISOString().slice(0,10)}
+  if(!$("#g_end").value)$("#g_end").value=today();
+  const s=$("#g_start").value,e=$("#g_end").value;
+  const r=await api(`/api/records?start=${s}&end=${e}`);$("#expRec").href=`/api/export-records.csv?start=${s}&end=${e}`;
+  const days=new Set(r.map(x=>x.record_date));let run=null,best=null;
+  const d=new Date(s+"T00:00:00Z"),end=new Date(e+"T00:00:00Z");
+  for(;d<=end;d.setUTCDate(d.getUTCDate()+1)){const k=d.toISOString().slice(0,10);
+    if(days.has(k))run=null;else{if(!run)run={a:k,n:0};run.n++;run.b=k;if(!best||run.n>best.n)best=run}}
+  $("#recStats").innerHTML=`<div class="stat"><small>Records</small><b>${r.length}</b></div><div class="stat low"><small>Longest gap</small><b>${best?best.n+" days":"None"}</b></div>`;
+  $("#gapBox").innerHTML=best&&best.n>=2?`<div class="gapbox"><b>No records ${fmtD(best.a)} to ${fmtD(best.b)}</b><br><small>${best.n} days with nothing recorded</small></div>`:"";
+  const g={};r.forEach(x=>(g[x.record_date]=g[x.record_date]||[]).push(x));
+  $("#recList").innerHTML=Object.keys(g).sort().reverse().map(k=>{const a=g[k],inn=a.filter(x=>x.change>0).reduce((t,x)=>t+x.change,0),sold=a.filter(x=>x.kind==="sale").reduce((t,x)=>t-x.change,0);
+    return `<div class="dh"><span>${fmtD(k)}${k===today()?" · Today":""}</span><small>${a.length} record${a.length>1?"s":""} · ${inn} in · ${sold} sold</small></div>`+
+    a.map(x=>`<div class="rec"><div><b>${esc(x.item)}</b><small>${x.kind==="incoming"?esc(x.ref)+" · ":""}${esc(x.note)}${x.initials?" · "+esc(x.initials):""}${x.backdated?` · <em>backdated, entered ${fmtD(x.entered_on)}</em>`:""}</small></div><span class="${x.change>0?"pos":"neg"}">${x.change>0?"+":""}${x.change}</span></div>`).join("")}).join("")||`<div class="empty">No records in this range.</div>`}
+$("#g_start").onchange=$("#g_end").onchange=loadRecords;
+function startPulse(){if(pt)return;pt=setInterval(async()=>{if(document.hidden||document.querySelector("dialog[open]"))return;
+  try{const r=await fetch("/api/pulse",{credentials:"same-origin"});if(!r.ok)return;const{v}=await r.json();
+  if(pv!==null&&v!==pv){await load();if(S.tab==="rec")loadRecords();toast("Updated")}}catch(e){}},5000)}
+
 /* ---------- start ---------- */
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 (async()=>{
   try{const m=await api("/auth/me");
-    if(m.auth_required&&!m.logged_in)showLogin();else load()}catch(_){}
+    if(m.auth_required&&!m.logged_in)showLogin();else{load();startPulse()}}catch(_){}
 })();
 </script></body></html>
